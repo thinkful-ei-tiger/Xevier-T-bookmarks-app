@@ -8,6 +8,14 @@ body {
   margin: 0 auto;
 }
 
+h1 {
+  padding-bottom: 20px;
+}
+
+#button-style {
+  padding-top: 15px;
+}
+
 button, input[type="text"] {
   padding: 5px;
 }
@@ -16,39 +24,26 @@ button:hover {
   cursor: pointer;
 }
 
-
-#shopping-list-item {
-  width: 250px;
-}
-
 .container {
   max-width: 600px;
   margin: 0 auto;
 }
 
-/* .hidden {
+.hidden {
   display: none;
-} */
-
-.shopping-list {
-  list-style: none;
-  padding-left: 0;
 }
 
-.shopping-list > li {
-  margin-bottom: 20px;
-  border: 1px solid grey;
-  padding: 20px;
+
+.list {
+  display: flex;
+  flex-direction: column;
 }
 
-.shopping-item {
-  display: block;
-  color: grey;
-  font-style: italic;
-  font-size: 20px;
-  margin-bottom: 15px;
+#filter {
+  padding-bottom: 20px;
+  padding-top: 20px;
 }
 
-.shopping-item__checked {
-  text-decoration: line-through;
-}
+.item {
+  padding-bottom: 15px;
+} 

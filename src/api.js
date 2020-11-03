@@ -1,4 +1,6 @@
-const BASE_URL = 'https://thinkful-list-api.herokuapp.com/xevier';
+import store from "./store";
+
+const BASE_URL = 'https://thinkful-list-api.herokuapp.com/xevier/bookmarks';
 
 function apiFetch(...args) {
     let error;
@@ -6,50 +8,45 @@ function apiFetch(...args) {
     return fetch(...args)
         .then(response => {
             if (!response.ok) {
-                error = { code: response.status};
+                error = true;
+                store.setError(true);
+                return response.json();
+            } else {
+                store.setError(false);
+                return response.json();
             }
-            return response.json();
         })
 
         .then(data => {
-            if(error) {
-                error.message = data.message;
-                return Promise.reject(error);
+            if(!error) {
+                return data;
             }
-            return data;
         });
-}
-
-const getBookmarks = function () {
-    return fetch(`${BASE_URL}/bookmarks`)
 };
 
-const createBookmark = function (obj) {
-    const newBookmark = obj;
-    console.log('newbookmark:', newBookmark)
-    const options = {
+const getBookmarks = function () {
+    return apiFetch(`${BASE_URL}`)
+};
+
+const createBookmark = function (newBookmark) {
+    return apiFetch(`${BASE_URL}`,
+        {
         method: 'POST',
-        headers: ({
-            'Content-type': 'application/json'
-        }),
+        headers: new Headers({'Content-Type': 'application/json'}),
         body: newBookmark,
-    }
-
-    return apiFetch(BASE_URL + '/bookmarks', options)
-}
-
-const deleteBookmark = function (objId) {
-    const options = {
-        method: 'DELETE',
-        headers: ({
-            'Content-type': 'application/json'
         })
-    }
-    return apiFetch(BASE_URL + '/bookmarks/' + objId, options)
 }
+
+const deleteBookmark = function (id) {
+    return apiFetch(`${BASE_URL}/${id}`,
+    {
+        method: 'DELETE',
+        });
+    }
+
 
 export default {
     getBookmarks, //read
     createBookmark, //create
     deleteBookmark, //delete
-}
+};

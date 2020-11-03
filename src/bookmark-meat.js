@@ -2,31 +2,22 @@ import $ from 'jquery';
 import index from './index.css';
 
 import api from './api';
-import STORE from './store.js';
-import store from './store.js';
+import store from './store';
 
 
-const app = $('#root');
-const list = $('#bookmarks-list')
+
+const list = $('.list')
 
 
-function renderInitialView() {
+function render() {
   let initialView = ``;
-  initialView += `${headerUI()}  ${submitFormUI()} ${filterUI()}`
-  $('#root').html(initialView);
-  list.html(bookmarkListUI());
+  store.filter = 0;
+  initialView += `${headerUI()}${submitFormUI()}${filterUI()}${bookmarkListUI()}`
+  $('main').html(initialView);
 }
 
-const generateError = function(errorMessage) {}
+// const generateError = function(errorMessage) {}
 
-// function renderSubmitForm() {
-//   let submitForm = ``;
-//   submitForm = `${headerUI()}${submitFormUI()}`
-//   $('#root').html(submitForm);
-//  // used code above instead of app.append(headerUI()); 
-//  // app.append(submitFormUI());
-//  //change html of root to show submit form html
-// }
 
 //------------------------TEMPLATES----------------------------------
 function headerUI() {
@@ -41,17 +32,18 @@ function headerUI() {
 
 // <div id="main-page">    
 // <button id="add-new-bookmark">Add New Bookmark</button>
-// goes at the top of mainpageUI
+
 function filterUI() {
   return `
-    <form>
+    <form id='filter'>
       <label for="filter">Filter</label>
-          <select name="filter" size="1">
-            <option value=1>&#9733;</option>
-            <option value=2>&#9733;&#9733;</option>
-            <option value=3>&#9733;&#9733;&#9733;</option>
-            <option value=4>&#9733;&#9733;&#9733;&#9733;</option>
-            <option value=5>&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+          <select class='filter' name="filter" size="1">
+            <option value=0>filter</option>
+            <option value=1 ${(store.filter === 1) ? 'selected' : ''}>&#9733;</option>
+            <option value=2 ${(store.filter === 2) ? 'selected' : ''}>&#9733;&#9733;</option>
+            <option value=3 ${(store.filter === 3) ? 'selected' : ''}>&#9733;&#9733;&#9733;</option>
+            <option value=4 ${(store.filter === 4) ? 'selected' : ''}>&#9733;&#9733;&#9733;&#9733;</option>
+            <option value=5 ${(store.filter === 5) ? 'selected' : ''}>&#9733;&#9733;&#9733;&#9733;&#9733;</option>
           </select>
     </form>
   </div>
@@ -62,7 +54,7 @@ function filterUI() {
 
 function submitFormUI() {
   return `
-  <div class="hidden">
+  <div>
           <form id="bookmark-form">
 
             <label for="title">Title</label>
@@ -70,7 +62,7 @@ function submitFormUI() {
             <input type="text" name="title" class="js-title" placeholder="Bookmark Title">
             <br>
             
-            <label for="js-url">URL</label>
+            <label for="url">URL</label>
             <input type="text" name="url" class="js-url-link" placeholder="URL Link">
             <br>
             
@@ -87,7 +79,9 @@ function submitFormUI() {
             <label for="description">Description:</label>
               <textarea id="description" name="desc"></textarea>
             <br>
+            <div id='button-style'>
             <input type="submit" value="Add Bookmark" id="add-bookmark"></input>
+            </div>
           </form>
           </div>
           <br>
@@ -95,15 +89,21 @@ function submitFormUI() {
 };
 
 function bookmarkListUI() {
-  const itemsUI = store.bookmarks.map((bookmark) => {
+  const list = store.bookmarks.filter(item => item.rating >= store.filter);
+  const itemsUI = list.map((bookmark) => {
     return `
+    <form class="list-form">
     <div class="item" data-item-id='${bookmark.id}'>
       <span>${bookmark.title}</span>
       <span>${bookmark.rating}</span>
-      <form id="list-form">
-        <input type="submit" value="delete" id="delete"></input>
-      </form>
+      <div id='item' class='hidden'>
+      <span>${bookmark.desc}</span>
+      <span><a href='${bookmark.url}'>${bookmark.url}</a></span>
+      </div>
+      <input type="submit" value="delete" id="delete"></input>
+      <input type="submit" value="view" id="toggle"></input>
     </div>
+    </form>
     `;
 });
 
@@ -126,90 +126,71 @@ function bookmarkListUI() {
 //   return $(bookmark).closest('.item').data('item-id');
 // };
 
-// handle click for new bookmark
-const handleAddBookmark = function () {
-  $('#bookmark-form').submit(function(e) {
+const handleExpand = function () {
+  $('main').on('click', '#toggle', (e) => {
     e.preventDefault();
-    console.log('im here')
+    let bookmarkID = $(e.target).closest('div').find('#item')
+    $(bookmarkID).toggleClass('hidden');
 
-    let formElement = $('#bookmark-form')[0];
-    let jsonObj = serializeJson(formElement);
+    // store.toggleBookmark(bookmarkID)
+  });
+}
+
+function handleFilterSelected() {
+  $('main').on('change', '#filter', (event) => {
+    let filter = $('.filter').val();
+    console.log(filter);
+    store.filter = filter;
+    render();
+  })
+}
+
+const handleBookmarkDelete = function () {
+  $('main').on('submit', '.list-form', (e) => {
+    e.preventDefault();
+
+    let bookmarkID = $(e.target).find('.item').data('item-id');
+
+  api.deleteBookmark(bookmarkID)
+    .then(() => {
+      store.removeBookmarkFromStore(bookmarkID)
+      render()
+    })
+    })
+  };
+
+const handleAddBookmark = function () {
+  $('main').on('submit', '#bookmark-form', function(e) {
+    e.preventDefault();
+
+    let jsonObj = $(e.target).serializeJson();
 
     api.createBookmark(jsonObj)
       .then(newBookmark => {
-        STORE.addBookmarkToStore(newBookmark);
+        store.addBookmarkToStore(newBookmark);
         render();
       })
-
-    // $.fn.extend({
-    //   serializeJSON: function() {
-    //     const formData = new FormData(this[0]);
-    //     const jsFormData = {};
-    //     formData.forEach((val, name) => (jsFormData[name] = val));
-    //     return JSON.stringify(jsFormData);
-    //   }
-    // });
-    // const jsonStringedFormData = $('#bookmark-form').serializeJSON();
-
-    // api
-    //   .createBookmark(jsonStringedFormData)
-    //   .then((data) => {
-    //     store.bookmarks.push(data);
-    //     render();
-      // });
   });
-}
-//     const form = serializeJson(e.target)
-//     store.bookmarks.push(form)
-//     renderInitialView();
-//   })
-// }
+ }
 
-// const serializeJson = (form) => {
-//   const formData = new FormData(form);
-//   const ob = {};
-//   formData.forEach((val, name) => ob[name] = val);
-//   return ob;
-// }
+ $.fn.extend({ serializeJson: function() { 
+   const formData = new FormData(this[0]); 
+   const o = {}; 
+   formData.forEach((val, name) => o[name] = val); 
+   return JSON.stringify(o); } });
 
-// const handleBookmarkDelete = function () {
-//   $('#root').on('submit', '#delete', (e) => {
-//     const bookmarkID = $(e.currentTarget)
-//     .parent()
-//     .parent()
-//     .parent()
-//     .data('item-id');
-//   api.deleteBookmark(id)
-//     .then(() => {
-//       STORE.deleteBookmark(id)
-//     })
-//   })
-// }
-
-// -> call function to remove item from bookmarks array, render
-
-// handle listener for filtering
-// -> grab value of the filter option, re-render 
-
+  
 
 // handle listener for expanding
 
 
-// function render() {
-//   let bookmarks = [];
-//   if (store.filter > 0) {
-//     bookmarks = store.bookmarks.filter(
-//       (bookmark) => bookmark.rating >= store.filter
-//     );
-//   } else {
-//     bookmarks = store.bookmarks;
-//   }
-//   const currentView = 
-// }
 
 
 function bindEventListeners() {
   handleAddBookmark();
+  handleBookmarkDelete();
+  handleExpand();
+  handleFilterSelected();
 }
 
 export default {

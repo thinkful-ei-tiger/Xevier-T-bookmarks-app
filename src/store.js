@@ -1,27 +1,41 @@
-let bookmarks = []
-let adding = false
-let error = null
-let filter = false
-let filteredBookmarks = []
+let bookmarks = [];
+let adding = false;
+let error = null;
+//let filteredBookmarks = [];
+let filter = 0;
+let errorMssg = '';
 
-const addBookmarkToStore = function (bookmark) {
-    bookmark.forEach((bookmark) => {
-        this.bookmarks.push(bookmark);
-    });
+
+
+const addBookmarkToStore = function (newEntry) {
+    const newBookmark = {
+        expanded: false,
+    };
+    bookmarks.push(Object.assign(newEntry, newBookmark));
+    console.log('addBookmarkToStore function', bookmarks);
 }
 
-function removeBookmarkFromStore(currentTargetBookmark) {
-    const currentTargetBookmarkIndex = this.bookmarks.findIndex((bookmark) => bookmark == currentTargetBookmark
-    );
-    this.bookmarks.splice(currentTargetBookmarkIndex, 1);
+function removeBookmarkFromStore(id) {
+    let index = -1;
+    for (let i = 0; i < bookmarks.length; i++) {
+        if (bookmarks[i].id == id) 
+        index = i;
+    }
+    bookmarks.splice(index, 1);
 }
 
-function findBookmarkId(bookmarkId) {
-    return this.bookmarks.find((bookmark) => bookmark.id == bookmarkId);
+function findBookmarkId(id) {
+    let thisObj = bookmarks.find(bookmark => bookmark.id === id);
+    return thisObj;
 }
 
-function toggleBookmark(item, state) {
-    item[state] = !item[state];
+function setError(val) {
+    this.error = val;
+}
+
+function toggleBookmark(id) {
+    let thisOne = findBookmarkId(id);
+    thisOne.expanded = !thisOne.expanded;
 }
 
 export default {
@@ -29,9 +43,11 @@ export default {
     adding,
     error,
     filter,
-    filteredBookmarks,
+   // filteredBookmarks,
+    errorMssg,
     addBookmarkToStore,
     removeBookmarkFromStore,
     findBookmarkId,
     toggleBookmark,
+    setError,
 }

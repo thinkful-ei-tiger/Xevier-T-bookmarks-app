@@ -1,19 +1,21 @@
 import $ from 'jquery';
-import api from './api.js';
+import api from './api';
 import './index.css';
-import bookmarkMeat from './index.js';
-import STORE from './store';
+import bookmarkMeat from './bookmark-meat';
+import store from './store';
 
 function main() {
     api.getBookmarks()
-    .then(response => response.json())
+
     .then(response => {
-        response.forEach(bookmark => STORE.addBookmarkToStore(bookmark)
-        )
-       bookmarks.render()
-    })
-    bookmarks.bindEventListeners();
+        response.forEach(bookmark => store.addBookmarkToStore(bookmark)
+        );
+
+       bookmarkMeat.render()
+    });
+    bookmarkMeat.bindEventListeners();
 };
 
 $(main);
+
 
