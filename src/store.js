@@ -1,7 +1,6 @@
 let bookmarks = [];
 let adding = false;
 let error = null;
-//let filteredBookmarks = [];
 let filter = 0;
 let errorMssg = '';
 
@@ -24,6 +23,9 @@ function removeBookmarkFromStore(id) {
     bookmarks.splice(index, 1);
 }
 
+  
+
+
 function findBookmarkId(id) {
     let thisObj = bookmarks.find(bookmark => bookmark.id === id);
     return thisObj;
@@ -32,6 +34,8 @@ function findBookmarkId(id) {
 function setError(val) {
     this.error = val;
 }
+
+
 
 function toggleBookmark(id) {
     let thisOne = findBookmarkId(id);
@@ -43,7 +47,6 @@ export default {
     adding,
     error,
     filter,
-   // filteredBookmarks,
     errorMssg,
     addBookmarkToStore,
     removeBookmarkFromStore,

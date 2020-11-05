@@ -5,18 +5,11 @@ import api from './api';
 import store from './store';
 
 
-
-const list = $('.list')
-
-
 function render() {
   let initialView = ``;
-  store.filter = 0;
   initialView += `${headerUI()}${submitFormUI()}${filterUI()}${bookmarkListUI()}`
   $('main').html(initialView);
 }
-
-// const generateError = function(errorMessage) {}
 
 
 //------------------------TEMPLATES----------------------------------
@@ -30,15 +23,12 @@ function headerUI() {
 `;
 };
 
-// <div id="main-page">    
-// <button id="add-new-bookmark">Add New Bookmark</button>
-
 function filterUI() {
   return `
     <form id='filter'>
       <label for="filter">Filter</label>
           <select class='filter' name="filter" size="1">
-            <option value=0>filter</option>
+            <option value=0></option>
             <option value=1 ${(store.filter === 1) ? 'selected' : ''}>&#9733;</option>
             <option value=2 ${(store.filter === 2) ? 'selected' : ''}>&#9733;&#9733;</option>
             <option value=3 ${(store.filter === 3) ? 'selected' : ''}>&#9733;&#9733;&#9733;</option>
@@ -94,10 +84,9 @@ function bookmarkListUI() {
     return `
     <form class="list-form">
     <div class="item" data-item-id='${bookmark.id}'>
-      <span>${bookmark.title}</span>
-      <span>${bookmark.rating}</span>
+      <span class='title-name'>${bookmark.title}<br>Rating: ${bookmark.rating}</span>
       <div id='item' class='hidden'>
-      <span>${bookmark.desc}</span>
+      <span>${bookmark.desc}&nbsp;&nbsp;&nbsp;</span>
       <span><a href='${bookmark.url}'>${bookmark.url}</a></span>
       </div>
       <input type="submit" value="delete" id="delete"></input>
@@ -112,27 +101,16 @@ function bookmarkListUI() {
       ${itemsUI.join(' ')}
     </div>
     `;
-  };
+};
+
+
 //-----------------------------------------------------------------------
-
-
-
-//function to hold string of submit view
-
-// **** listener functions
-
-// get ID from element
-// const getIdFromElement = function (bookmark) {
-//   return $(bookmark).closest('.item').data('item-id');
-// };
 
 const handleExpand = function () {
   $('main').on('click', '#toggle', (e) => {
     e.preventDefault();
     let bookmarkID = $(e.target).closest('div').find('#item')
     $(bookmarkID).toggleClass('hidden');
-
-    // store.toggleBookmark(bookmarkID)
   });
 }
 
@@ -157,34 +135,37 @@ const handleBookmarkDelete = function () {
       render()
     })
     })
-  };
+};
+
+function validateUrl(newEntry) {
+  let data = JSON.parse(newEntry)
+  if (!data.url.includes('http') || data.url.length <= 5) {
+      alert('URL must be longer than 5 characters and include http(s)://.');
+  }
+}
 
 const handleAddBookmark = function () {
   $('main').on('submit', '#bookmark-form', function(e) {
     e.preventDefault();
 
+
     let jsonObj = $(e.target).serializeJson();
+    validateUrl(jsonObj);
 
     api.createBookmark(jsonObj)
       .then(newBookmark => {
         store.addBookmarkToStore(newBookmark);
         render();
-      })
+      });
   });
- }
+}
 
- $.fn.extend({ serializeJson: function() { 
-   const formData = new FormData(this[0]); 
-   const o = {}; 
-   formData.forEach((val, name) => o[name] = val); 
-   return JSON.stringify(o); } });
-
-  
-
-// handle listener for expanding
-
-
-
+$.fn.extend({ serializeJson: function() { 
+  const formData = new FormData(this[0]); 
+  const o = {}; 
+  formData.forEach((val, name) => o[name] = val); 
+  return JSON.stringify(o); } 
+});
 
 function bindEventListeners() {
   handleAddBookmark();
