@@ -13,12 +13,11 @@ function render() {
 
 
 //------------------------TEMPLATES----------------------------------
+//removed an extra div from the header
 function headerUI() {
   return `
   <div id="header">
-  <div>
     <h1>My Bookmarks</h1>
-  </div>
   </div>
 `;
 };
@@ -26,7 +25,7 @@ function headerUI() {
 function filterUI() {
   return `
     <form id='filter'>
-      <label for="filter">Filter</label>
+      <label for="filter">Filter:</label>
           <select class='filter' name="filter" size="1">
             <option value=0></option>
             <option value=1 ${(store.filter === 1) ? 'selected' : ''}>&#9733;</option>
@@ -44,7 +43,7 @@ function filterUI() {
 
 function submitFormUI() {
   return `
-  <div>
+  <div id='submit-form'>
           <form id="bookmark-form">
 
             <label for="title">Title</label>
