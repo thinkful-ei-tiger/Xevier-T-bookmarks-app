@@ -26,13 +26,13 @@ function filterUI() {
   return `
     <form id='filter'>
       <label for="filter">Filter:</label>
-          <select class='filter' name="filter" size="1">
+          <select id='dropdown' class='filter' name="filter" size="1">
             <option value=0></option>
-            <option value=1 ${(store.filter === 1) ? 'selected' : ''}>&#9733;</option>
-            <option value=2 ${(store.filter === 2) ? 'selected' : ''}>&#9733;&#9733;</option>
-            <option value=3 ${(store.filter === 3) ? 'selected' : ''}>&#9733;&#9733;&#9733;</option>
-            <option value=4 ${(store.filter === 4) ? 'selected' : ''}>&#9733;&#9733;&#9733;&#9733;</option>
-            <option value=5 ${(store.filter === 5) ? 'selected' : ''}>&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+            <option value=1 ${(store.filter === 1) ? 'selected' : ''}>1</option>
+            <option value=2 ${(store.filter === 2) ? 'selected' : ''}>2</option>
+            <option value=3 ${(store.filter === 3) ? 'selected' : ''}>3</option>
+            <option value=4 ${(store.filter === 4) ? 'selected' : ''}>4</option>
+            <option value=5 ${(store.filter === 5) ? 'selected' : ''}>5</option>
           </select>
     </form>
   </div>
@@ -57,11 +57,11 @@ function submitFormUI() {
             
             <label for="rating">Rating</label>
                 <select name="rating" size="1">
-                  <option value=1>&#9733;</option>
-                  <option value=2>&#9733;&#9733;</option>
-                  <option value=3>&#9733;&#9733;&#9733;</option>
-                  <option value=4>&#9733;&#9733;&#9733;&#9733;</option>
-                  <option value=5>&#9733;&#9733;&#9733;&#9733;&#9733;</option>
+                  <option value=1>1</option>
+                  <option value=2>2</option>
+                  <option value=3>3</option>
+                  <option value=4>4</option>
+                  <option value=5>5</option>
                 </select>
             <br>
 
@@ -83,14 +83,17 @@ function bookmarkListUI() {
     return `
     <form class="list-form">
     <div class="item" data-item-id='${bookmark.id}'>
-      <span class='title-name'>${bookmark.title}<br>Rating: ${bookmark.rating}</span>
+      <span class='title-name'>${bookmark.title}<br><br>Rating: ${bookmark.rating}</span>
+     
       <div id='item' class='hidden'>
+      <span><a href='${bookmark.url}'>Visit Site!</a></span>
+      <br><br>
       <span>${bookmark.desc}&nbsp;&nbsp;&nbsp;</span>
-      <span><a href='${bookmark.url}'>${bookmark.url}</a></span>
       </div>
+      
       <input type="submit" value="delete" id="delete"></input>
       <input type="submit" value="view" id="toggle"></input>
-    </div>
+      </div>
     </form>
     `;
 });
@@ -109,7 +112,7 @@ const handleExpand = function () {
   $('main').on('click', '#toggle', (e) => {
     e.preventDefault();
     let bookmarkID = $(e.target).closest('div').find('#item')
-    $(bookmarkID).toggleClass('hidden');
+    $(bookmarkID).toggleClass('hidden').toggleClass('expanded');
   });
 }
 
