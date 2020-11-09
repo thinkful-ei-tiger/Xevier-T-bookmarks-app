@@ -69,7 +69,7 @@ function submitFormUI() {
               <textarea id="description" name="desc"></textarea>
             <br>
             <div id='button-style'>
-            <input type="submit" value="Add Bookmark" id="add-bookmark"></input>
+            <input type="submit" value="Add Bookmark" name="add-b" id="add-bookmark"></input>
             </div>
           </form>
           </div>
@@ -91,8 +91,8 @@ function bookmarkListUI() {
       <span>${bookmark.desc}&nbsp;&nbsp;&nbsp;</span>
       </div>
       
-      <input type="submit" value="delete" id="delete"></input>
-      <input type="submit" value="view" id="toggle"></input>
+      <input type="submit" value="delete" id="delete" name="del"></input>
+      <input type="submit" value="view" id="toggle" name="view"></input>
       </div>
     </form>
     `;
