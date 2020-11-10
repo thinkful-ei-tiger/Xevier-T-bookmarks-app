@@ -48,11 +48,11 @@ function submitFormUI() {
 
             <label for="title">Title</label>
 
-            <input type="text" name="title" class="js-title" placeholder="Bookmark Title">
+            <input id='title' type="text" name="title" class="js-title" placeholder="Bookmark Title">
             <br>
             
             <label for="url">URL</label>
-            <input type="text" name="url" class="js-url-link" placeholder="URL Link">
+            <input type="text" id='url' name="url" class="js-url-link" placeholder="URL Link">
             <br>
             
             <label for="rating">Rating</label>
@@ -139,10 +139,12 @@ const handleBookmarkDelete = function () {
     })
 };
 
-function validateUrl(newEntry) {
+function validateEntry(newEntry) {
   let data = JSON.parse(newEntry)
   if (!data.url.includes('http') || data.url.length <= 5) {
       alert('URL must be longer than 5 characters and include http(s)://.');
+  } else if (data.title === ' ' || data.title.length <= 1) {
+    alert('Title cannot be empty.');
   }
 }
 
@@ -152,7 +154,7 @@ const handleAddBookmark = function () {
 
 
     let jsonObj = $(e.target).serializeJson();
-    validateUrl(jsonObj);
+    validateEntry(jsonObj);
 
     api.createBookmark(jsonObj)
       .then(newBookmark => {
